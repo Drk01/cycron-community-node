@@ -6,5 +6,14 @@
   "repository": "https://github.com/Drk01/cycron-community-node.git",
   "author": "Omar Monrroy",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^1.7.0",
+    "sequelize": "^5.21.1"
+  }
 }
