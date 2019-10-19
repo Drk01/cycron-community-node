@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/', (req, res) => res.status(500).json(req.body));
+app.use(require('./routes/index'));
 
 app.listen(process.env.PORT, (err) => {
     if (err) {
