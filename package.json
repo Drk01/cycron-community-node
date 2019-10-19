@@ -1,0 +1,10 @@
+{
+  "name": "cycron-community",
+  "version": "1.0.0",
+  "description": "Proyecto Cycron Community en NodeJS",
+  "main": "index.js",
+  "repository": "https://github.com/Drk01/cycron-community-node.git",
+  "author": "Omar Monrroy",
+  "license": "MIT",
+  "private": true
+}
