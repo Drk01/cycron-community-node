@@ -124,8 +124,6 @@ const reset = async (req, res) => {
             message: 'Su contraseña ha sido reiniciada, por favor inicie sesión'
         })
     } catch (message) {
-
-        console.error(message);
         
         return res.status(500).json({
             ok: false,
@@ -135,6 +133,29 @@ const reset = async (req, res) => {
 
 };
 
+const refresh = async (req, res) => {
+    const token = req.get('token');
+
+    try {
+
+    const decoded = await JWT.decode(token, { complete: true});
+
+    const freshToken = await JWT.sign({ exp: Number(process.env.JWTEXPIRATION), data: decoded.data}, process.env.JWTKEY);
+
+    return res.json({
+        ok: true,
+        freshToken
+    });
+
+    } catch (message) {
+
+        return res.status(500).json({
+            ok: false,
+            message
+        });
+    }
+};
+
 module.exports = {
-    signUp, login, recovery, reset
+    signUp, login, recovery, reset, refresh
 };
