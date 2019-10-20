@@ -144,7 +144,8 @@ const refresh = async (req, res) => {
 
     return res.json({
         ok: true,
-        freshToken
+        freshToken,
+        expires_in: process.env.JWTEXPIRATION
     });
 
     } catch (message) {
