@@ -16,6 +16,10 @@ const User = db.define('User', {
         type: Sequelize.INTEGER,
         allowNull: true,
         defaultValue: 1
+    },
+    reset_token: {
+        type: Sequelize.TEXT,
+        allowNull: true
     }
 });
 
