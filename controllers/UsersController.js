@@ -158,6 +158,31 @@ const refresh = async (req, res) => {
     }
 };
 
+const me = async (req, res) => {
+    const token = req.get('token');
+
+    try {
+        
+        const decoded = JWT.decode(token);
+
+        const Usuario = await User.findOne({
+            where: {
+                email: decoded.data
+            }
+        });
+
+        Usuario['password'] = undefined;
+
+        return res.json(Usuario);
+
+    } catch (message) {
+        return res.status(500).json({
+            ok: false,
+            message
+        });
+    }
+};
+
 module.exports = {
-    signUp, login, recovery, reset, refresh
+    signUp, login, recovery, reset, refresh, me
 };

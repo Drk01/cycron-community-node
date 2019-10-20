@@ -9,4 +9,6 @@ router.post('/reset', async (req, res) => await Controller.reset(req, res));
 
 router.post('/refresh', async (req, res) => await Controller.refresh(req, res));
 
+router.get('/me', async (req, res) => await Controller.me(req, res));
+
 module.exports = router;
