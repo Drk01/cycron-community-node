@@ -107,6 +107,34 @@ const recovery = async (req, res) => {
     }
 };
 
+const reset = async (req, res) => {
+    body = req.body;
+    reset_token = body.reset_token;
+
+    try {
+
+        if (body.password !== body.password_confirmation) {
+            throw 'Verifique las contraseñas'
+        }
+
+        await User.update({ password: bcrypt.hashSync(body.password, 10) }, { where: { reset_token } });
+
+        return res.json({
+            ok: true, 
+            message: 'Su contraseña ha sido reiniciada, por favor inicie sesión'
+        })
+    } catch (message) {
+
+        console.error(message);
+        
+        return res.status(500).json({
+            ok: false,
+            message
+        });
+    }
+
+};
+
 module.exports = {
-    signUp, login, recovery
+    signUp, login, recovery, reset
 };
