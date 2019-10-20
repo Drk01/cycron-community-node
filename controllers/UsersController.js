@@ -44,7 +44,7 @@ const login = async (req, res) => {
             throw 'Correo electrónico o contraseña incorrectas';    
         }
 
-        const exp = Number(process.env.JWTEXPIRATION);
+        const exp = Math.floor(Date.now() / 1000) + Number(process.env.JWTEXPIRATION);
 
         const token = JWT.sign({ exp , data: Usuario.email }, process.env.JWTKEY );
 
@@ -140,7 +140,8 @@ const refresh = async (req, res) => {
 
     const decoded = await JWT.decode(token, { complete: true});
 
-    const freshToken = await JWT.sign({ exp: Number(process.env.JWTEXPIRATION), data: decoded.data}, process.env.JWTKEY);
+    const exp = Math.floor(Date.now() / 1000) + Number(process.env.JWTEXPIRATION);
+    const freshToken = await JWT.sign({ exp, data: decoded.data}, process.env.JWTKEY);
 
     return res.json({
         ok: true,
