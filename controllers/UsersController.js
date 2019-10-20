@@ -118,6 +118,7 @@ const reset = async (req, res) => {
         }
 
         await User.update({ password: bcrypt.hashSync(body.password, 10) }, { where: { reset_token } });
+        await User.update({ reset_token: '' }, { where: { reset_token } });
 
         return res.json({
             ok: true, 
