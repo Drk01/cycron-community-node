@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const JWT = require('jsonwebtoken');
 
 const signUp = async (req,res) =>{
     try {
@@ -22,8 +23,49 @@ const signUp = async (req,res) =>{
     }
 };
 
+const login = async (req, res) => {
+    let body = req.body;
+
+    try {
+
+        const Usuario = await User.findOne({
+            where: {
+                email: body.email
+            }
+        });
+
+        if(!Usuario){
+            throw 'Correo electrónico o contraseña incorrectas';  
+        }
+
+        if(!bcrypt.compareSync(body.password, Usuario.password)){
+            throw 'Correo electrónico o contraseña incorrectas';    
+        }
+
+        const exp = Number(process.env.JWTEXPIRATION);
+
+        const token = JWT.sign({ exp , data: Usuario.email }, process.env.JWTKEY );
+
+        return res.json({
+            ok: true,
+            token,
+            expires_in: process.env.JWTEXPIRATION
+        });
+        
+    } catch (message) {
+
+        console.error(message);
+        
+        return res.status(500).json({
+            ok:false,
+            message
+        });
+    }
+
+};
+
 
 
 module.exports = {
-    signUp
+    signUp, login
 };
