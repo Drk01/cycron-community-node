@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
+const transport = require('../services/mail');
+const rs = require('randomstring');
 
 const signUp = async (req,res) =>{
     try {
@@ -53,8 +55,6 @@ const login = async (req, res) => {
         });
         
     } catch (message) {
-
-        console.error(message);
         
         return res.status(500).json({
             ok:false,
@@ -64,8 +64,49 @@ const login = async (req, res) => {
 
 };
 
+const recovery = async (req, res) => {
+    const body = req.body;
 
+    try {
+        const Usuario = await User.findOne({
+            where: {
+                email: body.email
+            }
+        });
+
+        if(!Usuario){
+            throw 'Verifique su correo electrónico';
+        }
+
+        const reset_token = rs.generate();
+
+        await User.update({ reset_token }, {
+            where: {
+                id: Usuario.id
+            }
+        });
+
+        await transport.sendMail({
+            from: `${process.env.SMTPSENDER}`,
+            to: `${Usuario.email}`,
+            subject: 'Solicitud de restauración de contraseña',
+            text: `${reset_token}`
+        })
+
+        return res.json({
+            ok: true,
+            message: 'Se ha enviado el enlace de restauración a su correo electrónico'
+        });           
+
+    } catch (message) {
+
+        return res.status(500).json({
+            ok: false,
+            message
+        });
+    }
+};
 
 module.exports = {
-    signUp, login
+    signUp, login, recovery
 };
