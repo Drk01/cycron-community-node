@@ -123,6 +123,29 @@ const store = async (req, res) => {
     }
 };
 
+const getById = async (req, res) => {
+
+    const id = req.params.id;
+
+    try {
+        const post = await Post.findOne({
+            where: {
+                id
+            }
+        });
+
+        return res.json({
+            ok: true,
+            post
+        })
+    } catch (message) {
+        return res.status(500).json({
+            ok: false,
+            message
+        })
+    }
+};
+
 module.exports = {
-    all, posts, destroy, store
+    all, posts, destroy, store, getById
 }

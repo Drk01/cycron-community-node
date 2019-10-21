@@ -7,6 +7,7 @@ router.get('/posts', async (req, res) => await Controller.posts(req, res));
 
 router.post('/posts/store', async (req, res) => await Controller.store(req, res));
 router.delete('/posts/destroy/:id', async (req, res) => await Controller.destroy(req, res));
+router.get('/posts/get/:id', async (req, res) => await Controller.getById(req, res));
 
 
 
