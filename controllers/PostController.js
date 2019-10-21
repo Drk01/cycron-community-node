@@ -169,6 +169,73 @@ const imageContent = async (req, res) => {
             file: `/public/posts/images/${name}`
         });
     } catch (message) {
+        return res.status(500).json({
+            ok: false,
+            message
+        })
+    }
+};
+
+const update = async (req, res) => {
+    const body = req.body;
+    const id = req.params.id;
+    const files = req.files;
+
+    try {
+
+        if (files !== null) {
+
+            const toTouch = await Post.findOne({
+                where: {
+                    id
+                }
+            });     
+
+            const image = req.files.image;
+            const imageNameSplited = image.name.split('.');
+            const thumbnailExtension = imageNameSplited[1];
+            const allowedMimes = ['jpeg', 'jpg', 'png'];
+
+            if (!(allowedMimes.includes(thumbnailExtension))) {
+                throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
+            }
+
+            fs.unlinkSync(`./public/posts/thumbnails/${toTouch.image}`);
+
+            const nameImage = `${imageNameSplited[0]} - ${md5(rs.generate(10))}.${imageNameSplited[1]}`;
+
+            image.mv(`./public/posts/thumbnails/${nameImage}`);
+
+            await Post.update({
+                title: body.title,
+                description: body.description,
+                status: body.status,
+                image: nameImage
+            }, {
+                where: {
+                    id
+                }
+            });
+        } else {
+            await Post.update({
+                title: body.title,
+                description: body.description,
+                status: body.status
+            }, {
+                where: {
+                    id
+                }
+            });
+        }
+
+        
+
+        return res.json({
+            ok: true,
+            message: 'Artículo actualizado correctamente'
+        });
+
+    } catch (message) {
         console.log(message);
         return res.status(500).json({
             ok: false,
@@ -178,5 +245,5 @@ const imageContent = async (req, res) => {
 };
 
 module.exports = {
-    all, posts, destroy, store, getById, imageContent
+    all, posts, destroy, store, getById, imageContent, update
 }
