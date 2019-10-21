@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const fs = require('fs');
 
 const all = async (req, res) => {
     
@@ -52,8 +53,42 @@ const posts = async (req, res) => {
     }
 };
 
+const destroy = async (req, res) => {
+    const id  = req.params.id;
+
+    try {
+        const toDelete = await Post.findOne({
+            where: {
+                id
+            }
+        });
+
+        fs.unlinkSync(`./public/posts/thumbnails/${toDelete.image}`);
+
+        await Post.destroy({
+            where: {
+                id
+            }
+        });
+
+        return res.json({
+            ok: true,
+            message: 'Registro eliminado satisfactoriamente'
+        });
+        
+    } catch (message) {
+
+        console.error(message);
+        
+        return res.status(500).json({
+            ok: false,
+            message
+        })
+    }
+};
+
 
 
 module.exports = {
-    all, posts
+    all, posts, destroy
 }
