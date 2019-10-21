@@ -184,6 +184,30 @@ const me = async (req, res) => {
     }
 };
 
+const update = async (req, res) => {
+    const body = req.body;
+
+    try {
+        await User.update(body, {
+            where: {
+                id: req.user
+            }
+        })
+
+        return res.json({
+            ok: true,
+            message: 'Usuario actualizado satisfactoriamente'
+        });
+
+    } catch (message) {
+        return res.status(500).json({
+            ok: false,
+            message
+        });
+    }
+    
+};
+
 module.exports = {
-    signUp, login, recovery, reset, refresh, me
+    signUp, login, recovery, reset, refresh, me, update
 };
