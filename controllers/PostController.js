@@ -87,8 +87,42 @@ const destroy = async (req, res) => {
     }
 };
 
+const store = async (req, res) => {
 
+    const body = req.body;
+    const thumbnail = req.files.image;
+
+    try {
+        const thumbnailsSplit = thumbnail.name.split('.');
+        const thumbnailExtension = thumbnailsSplit[1];
+        const allowedMimes = ['jpeg', 'jpg', 'png'];
+
+        if(!(allowedMimes.includes(thumbnailExtension))){
+            throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
+        }
+
+        thumbnail.mv(`./public/posts/thumbnails/${thumbnail.name}`);
+
+        await Post.create({
+            image: thumbnail.name,
+            title: body.title,
+            description: body.description,
+            published_by: req.user
+        });
+
+        return res.json({
+            ok: true,
+            message: 'Artículo creado satisfactoramente'
+        });
+            
+    } catch (message) {
+        return res.status(500).json({
+            ok: false,
+            message
+        })
+    }
+};
 
 module.exports = {
-    all, posts, destroy
+    all, posts, destroy, store
 }
