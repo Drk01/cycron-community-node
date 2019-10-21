@@ -1,5 +1,7 @@
 const Post = require('../models/Post');
 const fs = require('fs');
+const md5 = require('md5');
+const rs = require('randomstring');
 
 const all = async (req, res) => {
     
@@ -146,6 +148,35 @@ const getById = async (req, res) => {
     }
 };
 
+const imageContent = async (req, res) => {
+    const image = req.files.image;
+
+    try {
+        const imageNameSplited = image.name.split('.');
+        const thumbnailExtension = imageNameSplited[1];
+        const allowedMimes = ['jpeg', 'jpg', 'png'];
+    
+        if(!(allowedMimes.includes(thumbnailExtension))){
+            throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
+        }
+    
+        const name = `${imageNameSplited[0]} - ${md5(rs.generate(10))}.${imageNameSplited[1]}`;
+    
+        image.mv(`./public/posts/images/${name}`);
+    
+        return res.json({
+            ok: true, 
+            file: `/public/posts/images/${name}`
+        });
+    } catch (message) {
+        console.log(message);
+        return res.status(500).json({
+            ok: false,
+            message
+        })
+    }
+};
+
 module.exports = {
-    all, posts, destroy, store, getById
+    all, posts, destroy, store, getById, imageContent
 }
