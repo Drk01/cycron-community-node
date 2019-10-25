@@ -3,8 +3,10 @@ require('./services/database');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload());
