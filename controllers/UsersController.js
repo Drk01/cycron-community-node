@@ -13,7 +13,7 @@ const signUp = async (req,res) =>{
         });
 
         return res.json({
-            ok: true,
+            status: 'ok',
             message: 'Usuario registrado satisfactoriamente'
         });
 
@@ -49,7 +49,7 @@ const login = async (req, res) => {
         const token = JWT.sign({ exp , data: Usuario.email }, process.env.JWTKEY );
 
         return res.json({
-            ok: true,
+            status: 'ok',
             token,
             expires_in: process.env.JWTEXPIRATION
         });
@@ -94,7 +94,7 @@ const recovery = async (req, res) => {
         })
 
         return res.json({
-            ok: true,
+            status: 'ok',
             message: 'Se ha enviado el enlace de restauración a su correo electrónico'
         });           
 
@@ -121,7 +121,7 @@ const reset = async (req, res) => {
         await User.update({ reset_token: '' }, { where: { reset_token } });
 
         return res.json({
-            ok: true, 
+            status: 'ok',
             message: 'Su contraseña ha sido reiniciada, por favor inicie sesión'
         })
     } catch (message) {
@@ -145,7 +145,7 @@ const refresh = async (req, res) => {
     const freshToken = await JWT.sign({ exp, data: decoded.data}, process.env.JWTKEY);
 
     return res.json({
-        ok: true,
+        status: 'ok',
         freshToken,
         expires_in: process.env.JWTEXPIRATION
     });
@@ -195,7 +195,7 @@ const update = async (req, res) => {
         })
 
         return res.json({
-            ok: true,
+            status: 'ok',
             message: 'Usuario actualizado satisfactoriamente'
         });
 
