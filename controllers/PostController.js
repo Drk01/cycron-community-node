@@ -106,7 +106,7 @@ const store = async (req, res) => {
         thumbnail.mv(`./public/posts/thumbnails/${thumbnail.name}`);
 
         await Post.create({
-            image: thumbnail.name,
+            image: 'thumbnails/'+thumbnail.name,
             title: body.title,
             description: body.description,
             published_by: req.user
