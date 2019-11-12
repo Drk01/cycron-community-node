@@ -4,13 +4,16 @@ const md5 = require('md5');
 const rs = require('randomstring');
 
 const all = async (req, res) => {
-    
+
     try {
-        //TODO: Hacer que los registros salgan ordenados de forma descendente 
-        const posts = await Post.findAll({});
+        const posts = await Post.findAll({
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
 
         return res.json({
-            ok: true, 
+            ok: true,
             posts
         });
 
@@ -31,12 +34,12 @@ const posts = async (req, res) => {
     try {
         let posts = null;
 
-        if(offset > 0){
+        if (offset > 0) {
             posts = await Post.findAll({
                 limit,
                 offset
             });
-        }else{
+        } else {
             posts = await Post.findAll({
                 limit
             });
@@ -56,7 +59,7 @@ const posts = async (req, res) => {
 };
 
 const destroy = async (req, res) => {
-    const id  = req.params.id;
+    const id = req.params.id;
 
     try {
         const toDelete = await Post.findOne({
@@ -77,11 +80,11 @@ const destroy = async (req, res) => {
             ok: true,
             message: 'Registro eliminado satisfactoriamente'
         });
-        
+
     } catch (message) {
 
         console.error(message);
-        
+
         return res.status(500).json({
             ok: false,
             message
@@ -99,14 +102,14 @@ const store = async (req, res) => {
         const thumbnailExtension = thumbnailsSplit[1];
         const allowedMimes = ['jpeg', 'jpg', 'png'];
 
-        if(!(allowedMimes.includes(thumbnailExtension))){
+        if (!(allowedMimes.includes(thumbnailExtension))) {
             throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
         }
 
         thumbnail.mv(`./public/posts/thumbnails/${thumbnail.name}`);
 
         await Post.create({
-            image: 'thumbnails/'+thumbnail.name,
+            image: 'thumbnails/' + thumbnail.name,
             title: body.title,
             description: body.description,
             published_by: req.user
@@ -116,7 +119,7 @@ const store = async (req, res) => {
             ok: true,
             message: 'Artículo creado satisfactoramente'
         });
-            
+
     } catch (message) {
         return res.status(500).json({
             ok: false,
@@ -155,17 +158,17 @@ const imageContent = async (req, res) => {
         const imageNameSplited = image.name.split('.');
         const thumbnailExtension = imageNameSplited[1];
         const allowedMimes = ['jpeg', 'jpg', 'png'];
-    
-        if(!(allowedMimes.includes(thumbnailExtension))){
+
+        if (!(allowedMimes.includes(thumbnailExtension))) {
             throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
         }
-    
+
         const name = `${imageNameSplited[0]} - ${md5(rs.generate(10))}.${imageNameSplited[1]}`;
-    
+
         image.mv(`./public/posts/images/${name}`);
-    
+
         return res.json({
-            ok: true, 
+            ok: true,
             file: `/public/posts/images/${name}`
         });
     } catch (message) {
@@ -189,7 +192,7 @@ const update = async (req, res) => {
                 where: {
                     id
                 }
-            });     
+            });
 
             const image = req.files.image;
             const imageNameSplited = image.name.split('.');
@@ -228,7 +231,6 @@ const update = async (req, res) => {
             });
         }
 
-        
 
         return res.json({
             ok: true,
