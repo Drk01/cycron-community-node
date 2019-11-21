@@ -1,5 +1,6 @@
 const db = require('../services/database');
 const Sequelize = require('sequelize');
+const sequelizePaginate = require('sequelize-paginate');
 
 const Post = db.define('Post', {
     image: {
@@ -21,12 +22,13 @@ const Post = db.define('Post', {
     },
     important: {
         type: Sequelize.INTEGER,
-        allowNull: true
+        allowNull: true,
+        defaultValue: 1
     },
     published_by: {
         type: Sequelize.INTEGER
     }
 });
 
-
+sequelizePaginate.paginate(Post);
 module.exports = Post;
