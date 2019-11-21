@@ -2,6 +2,7 @@ const Post = require('../models/Post');
 const fs = require('fs');
 const md5 = require('md5');
 const rs = require('randomstring');
+const base64Str = require('base64-to-image');
 
 const all = async (req, res) => {
 
@@ -28,27 +29,15 @@ const all = async (req, res) => {
 
 const posts = async (req, res) => {
     const body = req.body;
-    const limit = body.limit || 5;
-    const offset = limit * body.offset;
+    const reqPage = req.query.page;
 
     try {
-        let posts = null;
-
-        if (offset > 0) {
-            posts = await Post.findAll({
-                limit,
-                offset
-            });
-        } else {
-            posts = await Post.findAll({
-                limit
-            });
-        }
-
-        return res.json({
-            ok: true,
-            posts
+        const posts = await Post.paginate({
+            page: reqPage,
+            paginate: 10,
+            order: [['id', 'DESC']]
         });
+        return res.json(posts);
 
     } catch (message) {
         return res.status(500).json({
@@ -68,7 +57,7 @@ const destroy = async (req, res) => {
             }
         });
 
-        fs.unlinkSync(`./public/posts/thumbnails/${toDelete.image}`);
+        await fs.unlinkSync(`./public${toDelete.image}`);
 
         await Post.destroy({
             where: {
@@ -98,27 +87,16 @@ const store = async (req, res) => {
     const thumbnail = req.files.image;
 
     try {
-        const thumbnailsSplit = thumbnail.name.split('.');
-        const thumbnailExtension = thumbnailsSplit[1];
-        const allowedMimes = ['jpeg', 'jpg', 'png'];
+         thumbnail.mv(`./public/posts/thumbnails/${thumbnail.name}`);
 
-        if (!(allowedMimes.includes(thumbnailExtension))) {
-            throw `File extension not allowed, only JPG, JPEG, PNG. Not ${thumbnailExtension}`;
-        }
-
-        thumbnail.mv(`./public/posts/thumbnails/${thumbnail.name}`);
-
-        await Post.create({
-            image: 'thumbnails/' + thumbnail.name,
+        const postCreado = await Post.create({
+            image: `/posts/thumbnails/${thumbnail.name}`,
             title: body.title,
             description: body.description,
             published_by: req.user
         });
 
-        return res.json({
-            ok: true,
-            message: 'Artículo creado satisfactoramente'
-        });
+        return res.status(201).json(postCreado);
 
     } catch (message) {
         return res.status(500).json({
@@ -152,10 +130,30 @@ const getById = async (req, res) => {
 };
 
 const imageContent = async (req, res) => {
-    const image = req.files.image;
+
+    let image64 = req.body.image;
+
+
+    /*    let image = req.files.image;
+
+        const pos = image.indexOf(";");
+        const type = image.split(image.substring(0, pos))[1];
+
+        image = image.replace(`data:${type};base64,` ,'');
+        image = image.replace(' ', '+');
+
+        image = Base64.atob(image);*/
 
     try {
-        const imageNameSplited = image.name.split('.');
+        const image = base64Str(image64, './public/posts/images/', {
+            filename: `${md5(rs.generate(10))}-asdfsaf`,
+        });
+
+        return res.json({
+            default: `http://${req.headers.host}/v1/posts/images/${image.fileName}`
+        });
+
+        /*const imageNameSplited = image.name.split('.');
         const thumbnailExtension = imageNameSplited[1];
         const allowedMimes = ['jpeg', 'jpg', 'png'];
 
@@ -165,12 +163,12 @@ const imageContent = async (req, res) => {
 
         const name = `${imageNameSplited[0]} - ${md5(rs.generate(10))}.${imageNameSplited[1]}`;
 
-        image.mv(`./public/posts/images/${name}`);
+        await image.mv(`./public/posts/images/${name}`);
 
         return res.json({
-            ok: true,
-            file: `/public/posts/images/${name}`
-        });
+            default: `/posts/images/${name}`
+        });*/
+
     } catch (message) {
         return res.status(500).json({
             ok: false,
