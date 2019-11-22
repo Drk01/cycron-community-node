@@ -219,6 +219,26 @@ const users = async (req, res) => {
     }
 };
 
+const destroy = async (req, res) => {
+    const params = req.params;
+
+    try {
+        await User.destroy({
+            where: {
+                id: params.id
+            }
+        });
+
+        return res.json({
+            ok: 'true',
+            message: 'Registro eliminado satisfactoriamente'
+        });
+    }catch (e) {
+        console.log(e);
+        return res.status(500).json(e);
+    }
+};
+
 module.exports = {
-    signUp, login, recovery, reset, refresh, me, update, users
+    signUp, login, recovery, reset, refresh, me, update, users, destroy
 };

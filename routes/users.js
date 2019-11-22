@@ -14,5 +14,6 @@ router.post('/update/:id', auth, async (req, res) => await Controller.update(req
 router.get('/me', auth, async (req, res) => await Controller.me(req, res));
 
 router.get('/users', async (req, res) => await Controller.users(req, res));
+router.delete('/destroy/:id', auth, async (req, res) => await Controller.destroy(req, res));
 
 module.exports = router;
