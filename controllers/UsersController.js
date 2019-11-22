@@ -186,13 +186,14 @@ const me = async (req, res) => {
 
 const update = async (req, res) => {
     const body = req.body;
+    const params = req.params;
 
     try {
         await User.update(body, {
             where: {
-                id: req.user
+                id: params.id
             }
-        })
+        });
 
         return res.json({
             status: 'ok',
@@ -208,6 +209,16 @@ const update = async (req, res) => {
     
 };
 
+const users = async (req, res) => {
+    try {
+        const users = await User.findAll({});
+
+        return res.json(users);
+    }catch (e) {
+        return res.status(500).json(e);
+    }
+};
+
 module.exports = {
-    signUp, login, recovery, reset, refresh, me, update
+    signUp, login, recovery, reset, refresh, me, update, users
 };
