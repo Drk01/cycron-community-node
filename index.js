@@ -7,6 +7,13 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 
+/**
+ * Función asíncrona que accionará el scrapper una vez cada día
+ * @type {[null]}
+ */
+const TheBrainCron = require('./services/TheBrainCronJob');
+TheBrainCron.scrapeBadges();
+
 app.use(cors());
 app.use(fileUpload());
 app.use(bodyParser.json({ limit: '50mb' }));
